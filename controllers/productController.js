@@ -1,20 +1,31 @@
 const Product = require('../models/productModel');
 
 exports.getProducts = async (req, res, next) => {
-    // console.log(req.query);
-    var query = {}; // { category: req.query.category, price: { $gt: req.query.from_price, $lt: req.query.to_price} }
-    if(req.query.category) {
-        query = {...query, category: req.query.category};
+    try {
+        // console.log(req.query);
+        const { category, from_price, to_price } = req.query;
+        var query = {};
+        
+        if(category) {
+            query = {...query, category: category};
+        }
+        if(from_price && to_price) {
+            query = {...query, price: { $gt: from_price, $lt: to_price}};
+        }
+        
+        const products = await Product.find(query);
+        res.status(200).json({
+            success: 1,
+            products
+        })
+
+    } catch (error) {
+
+        res.status(404).json({
+            success: 0,
+            message: 'Products are not found'
+        })
     }
-    if(req.query.from_price && req.query.to_price) {
-        query = {...query, price: { $gt: req.query.from_price, $lt: req.query.to_price}};
-    }
-    
-    const products = await Product.find(query);
-    res.status(200).json({
-        success: 1,
-        products
-    })
 }
 
 exports.getSingleProduct = async (req, res, next) => {
