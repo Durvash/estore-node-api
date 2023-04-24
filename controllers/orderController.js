@@ -33,3 +33,20 @@ exports.newOrder = async (req, res, next) => {
         })
     }
 }
+
+exports.getOrderList = async (req, res, next) => {
+    try {
+        const order = await Order.find();
+        res.status(200).json({
+            success: 1,
+            order
+        })
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: 0,
+            message: `Something went wrong, ${$error.message}`
+        })
+    }
+}
